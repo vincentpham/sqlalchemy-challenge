@@ -15,6 +15,8 @@ Base.prepare(engine, reflect=True)
 
 
 # reflect the tables
+Measurement = Base.classes.measurement
+Station = Base.classes.station
 
 
 # Save references to each table
