@@ -53,6 +53,7 @@ app = Flask(__name__)
 def home():
     return "Welcome! Here are the available routes... :downemoji:"
 
+# precipitation route
 @app.route("/api/v1.0/precipitation")
 def precipitation():
     recent_date = session.query(Measurement.date).order_by(Measurement.date.desc()).first()[0]
@@ -65,6 +66,7 @@ def precipitation():
 
     return jsonify(data)
 
+# stations route
 @app.route("/api/v1.0/stations")
 def stations():
     results = session.query(Station.station).all()
@@ -76,6 +78,7 @@ def stations():
         
     return jsonify(data)
 
+# temperature observation stations route
 @app.route("/api/v1.0/tobs")
 def tobs():
     most_active_station_id = session.query(Measurement.station).group_by(Measurement.station).order_by(func.count().desc()).first()[0]
