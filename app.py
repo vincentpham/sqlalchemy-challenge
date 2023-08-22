@@ -48,7 +48,7 @@ def home():
         f"<a href='/api/v1.0/<start>/<end>'>/api/v1.0/{{start_date}}/{{end_date}}</a><br/>"
     )
 
-
+# precipitation route
 @app.route("/api/v1.0/precipitation")
 def precipitation():
     session = Session()
@@ -61,7 +61,7 @@ def precipitation():
     session.close()
     return jsonify(data)
 
-
+# stations route
 @app.route("/api/v1.0/stations")
 def stations():
     session = Session()
@@ -71,35 +71,27 @@ def stations():
     session.close()
     return jsonify(data)
 
-
+# tobs route
 @app.route("/api/v1.0/tobs")
 def tobs():
-    
     session = Session()
+    
+    # finding the most active station
     most_active_station_id = session.query(Measurement.station).group_by(Measurement.station).order_by(func.count().desc()).first()[0]
+    
+    # most recent date for the most active station
     recent_date = session.query(Measurement.date).filter(Measurement.station == most_active_station_id).order_by(Measurement.date.desc()).first()[0]
+    
+    # calculating the start date for the previous year of data
     start_date = dt.datetime.strptime(recent_date, '%Y-%m-%d') - dt.timedelta(days=365)
-    results = session.query(Measurement.tobs).filter(Measurement.station == most_active_station_id).filter(Measurement.date >= start_date).all()
-    data = [temp[0] for temp in results]
+   
+   # query for temperature observations for the most active station for the previous year
+    results = session.query(Measurement.date, Measurement.tobs).filter(Measurement.station == most_active_station_id).filter(Measurement.date >= start_date).all()
+    
+    # extracting temperature observations and creating a JSON list
+    data = [{"Date": date, "Temperature": temp} for date, temp in results]
     session.close()
     return jsonify(data)
-
-# @app.route("/api/v1.0/tobs")
-# def tobs():
-    ## most active station ID
-    # most_active_station_id = session.query(Measurement.station).group_by(Measurement.station).order_by(func.count().desc()).first()[0]
-    # recent_date = session.query(Measurement.date).filter(Measurement.station == most_active_station_id).order_by(Measurement.date.desc()).first()[0]
-    # start_date = dt.datetime.strptime(recent_date, '%Y-%m-%d') - dt.timedelta(days=365)
-    
-    # joining measurement and station tables
-    # results = session.query(Measurement.tobs, Station.name, Station.latitude, Station.longitude).\
-        # join(Station, Measurement.station == Station.station).\
-        # filter(and_(Measurement.station == most_active_station_id, Measurement.date >= start_date)).all()
-
-    # # processing the data as needed
-    # data = [{"Temperature": temp, "Station Name": name, "Latitude": lat, "Longitude": lon} for temp, name, lat, lon in results]
-
-    # return jsonify(data)
 
 
 # start and end routes
@@ -127,5 +119,4 @@ def start_end(start, end):
 # Starting the app
 if __name__ == "__main__":
     app.run(debug=True)
-    
-# defining queries for each of the routes
+
