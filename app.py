@@ -51,8 +51,15 @@ app = Flask(__name__)
        #  return jsonify({"error": "Invalid date format. Please use 'YYYY-MM-DD'."}), 400
 
 def home():
-    return "Welcome! Here are the available routes... :downemoji:"
-
+    return(
+        f"Welcome! Here are the available routes<br/>"
+        f"<a href='/api/v1.0/precipitation'>/api/v1.0/precipitation</a><br/>"
+        f"<a href='/api/v1.0/stations'>/api/v1.0/stations</a><br/>"
+        f"<a href='/api/v1.0/tobs'>/api/v1.0/tobs</a><br/>"
+        f"<a href='/api/v1.0/<start>'>/api/v1.0/{{start_date}}</a><br/>"
+        f"<a href='/api/v1.0/<start>/<end>'>/api/v1.0/{{start_date}}/{{end_date}}</a><br/>"
+            )
+    
 # precipitation route
 @app.route("/api/v1.0/precipitation")
 def precipitation():
@@ -67,6 +74,9 @@ def precipitation():
     return jsonify(data)
 
 # stations route
+
+# okay only stations route is working so far
+
 @app.route("/api/v1.0/stations")
 def stations():
     results = session.query(Station.station).all()
