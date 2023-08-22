@@ -4,6 +4,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy import and_ # to join tables
+from sqlalchemy import func
 from sqlalchemy.orm import sessionmaker
 import datetime as dt # in case i need to convert date time formatting
 
